@@ -25,12 +25,14 @@ let singleAdjustedGrossIncome = incomes[0] - standardDeductions;
 const socialsecuritytax = incomes[0] * .062;
 const medicaretax = incomes[0] * .0145;
 
-console.log("-------------------------------");
+console.log("");
+console.log("----------------------------------");
 
 console.log("Gross:\t\t    $", incomes[0].toFixed(2));
 console.log("AGI:\t\t     $", (singleAdjustedGrossIncome).toFixed(2));
 
-console.log("-------------------------------");
+console.log("----------------------------------");
+
 
 function socialSecurityTax() {
 
@@ -49,8 +51,11 @@ function medicareTax() {
 medicareTax();
 
 const fica = socialsecuritytax + medicaretax;
+console.log("---------------------------------");
+console.log("");
+console.log("");
 console.log("FICA:\t\t\t$", fica.toFixed(2));
-console.log("-------------------------------");
+console.log("---------------------------------");
 
 function calculateGeorgiaIncomeTax(filingStatus) {
     // Define Georgia state tax brackets for 2022
