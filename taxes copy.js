@@ -3,13 +3,15 @@
 // from 50k - 300k
 let incomes = [130000];
 
-function payout(money) {  
-    // console.log("\tMonthly:\t$", (money / 12).toFixed(2));
-    // console.log("\tSemi-monthly:\t$", (money / 24).toFixed(2));
-    // console.log("\tBi-weekly:\t$", (money / 26).toFixed(2));
-    // console.log("\tweekly:\t\t$", (money / 52).toFixed(2));
-    // console.log("\tday:\t\t$", (money / 52 / 5).toFixed(2));
-    // console.log("\thour:\t\t$", (money / 52 / 40).toFixed(2));  
+function payout(money) {
+    console.log("")
+    console.log("\tMonthly:\t$", (money / 12).toFixed(2));
+    console.log("\tSemi-monthly:\t$", (money / 24).toFixed(2));
+    console.log("\tBi-weekly:\t$", (money / 26).toFixed(2));
+    console.log("\tweekly:\t\t$", (money / 52).toFixed(2));
+    console.log("\tday:\t\t$", (money / 52 / 8).toFixed(2));
+    console.log("\thour:\t\t$", (money / 52 / 40).toFixed(2));
+    console.log("")
 }
 
 
@@ -26,7 +28,7 @@ function payout(money) {
 let standardDeductions = 12950;
 // Standard deduction based on filing status
 const standardDeduction = {
-    single: 12950,
+    single: 4600,
     married: 7100,
     headOfHousehold: 0
 };
@@ -36,24 +38,29 @@ let singleAdjustedGrossIncome = incomes[0] - standardDeductions;
 const socialsecuritytax = incomes[0] * .062;
 const medicaretax = incomes[0] * .0145;
 
-console.log("------------------------------------------");
+console.log("----------------------------------");
 
-console.log("Yearly Gross:\t\t      $", incomes[0].toFixed(2));
+console.log("Gross:\t\t      $", incomes[0].toFixed(2));
 payout(incomes[0]);
-socialSecurityTax();
-payout(socialsecuritytax);
+
+console.log("AGI:\t\t      $", (singleAdjustedGrossIncome).toFixed(2));
+payout(singleAdjustedGrossIncome);
+
+console.log("----------------------------------");
 
 function socialSecurityTax() {
-    console.log("Yearly Social Security Tax:\t$", socialsecuritytax.toFixed(2));
-    
+
+    console.log("Social Security Tax:\t$", socialsecuritytax.toFixed(2));
 }
+
+socialSecurityTax();
+payout(socialsecuritytax);
 
 function medicareTax() {
     if (medicaretax > 200000) {
         medicaretax *= .009;
     }
-
-    console.log("Yearly Medicare:\t\t$", medicaretax.toFixed(2));
+    console.log("Medicare:\t\t$", medicaretax.toFixed(2));
 }
 
 medicareTax();
@@ -61,17 +68,14 @@ payout(medicaretax);
 
 const fica = socialsecuritytax + medicaretax;
 
-console.log("------------------------------------------");
+console.log("---------------------------------");
 console.log("");
 console.log("");
-// console.log("Yearly FICA:\t\t\t$", fica.toFixed(2));
-// payout(fica)
-console.log("------------------------------------------");
-console.log("Yearly Taxable Income AGI:    $", (singleAdjustedGrossIncome).toFixed(2));
-payout(singleAdjustedGrossIncome);
+console.log("FICA:\t\t\t$", fica.toFixed(2));
+payout(fica)
+console.log("---------------------------------");
 
 function calculateGeorgiaIncomeTax(filingStatus) {
-     
     // Define Georgia state tax brackets for 2022
     const georgiaTaxBrackets = [
         { min: 1, max: 750, rate: 0.01 },
@@ -79,13 +83,12 @@ function calculateGeorgiaIncomeTax(filingStatus) {
         { min: 2251, max: 3750, rate: 0.03 },
         { min: 3751, max: 5250, rate: 0.04 },
         { min: 5251, max: 7000, rate: 0.05 },
-        { min: 7001, max:100772, rate: 0.0575 },        
+        { min: 7001, max: 99999999, rate: 0.0575 }
     ];
 
     // Georgia standard deduction
     // $5,400 and those married filing jointly could deduct $7,100
-    const personalExemption = 2700; // Georgia doesn't have a standard deduction
-    const georgiaStandardDeduction = 4600 + personalExemption; // Georgia doesn't have a standard deduction
+    const georgiaStandardDeduction = 4600; // Georgia doesn't have a standard deduction
     // Subtract the standard deduction from the income
 
     // const taxableIncome = Math.max(income[0] - standardDeduction[filingStatus.toLowerCase()], 0);
@@ -111,6 +114,17 @@ function calculateGeorgiaIncomeTax(filingStatus) {
 
     return georgiaTax;
 }
+
+// // Means married to one person
+// let MarriedStandDeductions = standardDeductions * 2;
+// let MarriedAdjustedGrossIncome = incomes[0] + incomes[1] + (standardDeductions * 2);
+
+
+
+
+
+// This is where we save money
+let otherDeductions = [];
 
 const rates = [.1, .12, .22, .24, .32, .35, .37];
 
@@ -202,7 +216,6 @@ function calculateSinglesBrackets2022(singleAdjustedGrossIncome) {
 
 
     const afterTax = incomes[0] - sum;
-    console.log("After Tax\t\t", afterTax);
     console.log("Federal Tax:\t        $%d", sum);
     // console.log("Yearly federal taxes: $%d - $%d = $%d", incomes[0], sum, afterTax);
     // console.log("After Tax");
@@ -238,21 +251,29 @@ function calculateSinglesBrackets2022(singleAdjustedGrossIncome) {
 }
 
 const federalTax = calculateSinglesBrackets2022(singleAdjustedGrossIncome);
-// payout(federalTax)
+payout(federalTax)
 
 const georgiaStateTax = calculateGeorgiaIncomeTax("Single");
 
-const taxBurden = federalTax + 7475;
+const taxBurden = federalTax + georgiaStateTax + fica;
 
 const netpay = incomes[0] - taxBurden;
 
 console.log("GA State Tax:  \t\t ", georgiaStateTax.toFixed(2));
-// payout(georgiaStateTax)
+payout(georgiaStateTax)
 console.log("Tax:\t\t       $", taxBurden.toFixed(2));
-// payout(taxBurden)
+payout(taxBurden)
 console.log("Net Pay:\t\t", netpay);
-// payout(netpay)
+payout(netpay)
+console.log("End Net Pay");
 
+console.log("Check Stub breakdown");
+console.log("---------------------------------");
+console.log("");
+const housing = netpay * 0.50;
+const saving = netpay * 0.20;
+const extra = netpay * 0.30;
+const investing = netpay * 0.00;
 
 const housingCost = (housing) => {
     console.log("Housing:\t\t\t$", (housing).toFixed(2));
@@ -286,26 +307,15 @@ const housingCost = (housing) => {
 
 }
 
-
-const moneybreakdown = () => {
-    console.log("Check Stub breakdown");
-    console.log("---------------------------------");
-    console.log("");
-    const housing = netpay * 0.50;
-    const saving = netpay * 0.20;
-    const extra = netpay * 0.30;
-    const investing = netpay * 0.00;
-    // const houseAfford = housingCost(housing);
-    console.log("Housing:\t$", (housing).toFixed(2));
-    payout(housing)
-    console.log("");
-    console.log("Saving:\t\t$", (saving).toFixed(2));
-    payout(saving)
-    console.log("");
-    console.log("Extra:\t\t$", (extra).toFixed(2));
-    payout(extra)
-    console.log("");
-    console.log("---------------------------------");
-    console.log("Mortage:");
-}
-// moneybreakdown()
+// const houseAfford = housingCost(housing);
+console.log("Housing:\t$", (housing).toFixed(2));
+payout(housing)
+console.log("");
+console.log("Saving:\t\t$", (saving).toFixed(2));
+payout(saving)
+console.log("");
+console.log("Extra:\t\t$", (extra).toFixed(2));
+payout(extra)
+console.log("");
+console.log("---------------------------------");
+console.log("Mortage:");
